@@ -1,7 +1,24 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * Where the API lives, relative to wherever this page is mounted.
+ *
+ * A bare "/api" breaks behind a proxy that serves the app under a path prefix
+ * (code-server's port proxy uses /<workspace-id>-<port>/): the browser would
+ * ask the proxy root for /api/..., above the prefix, and get the proxy's 404.
+ * Deriving it from the current path keeps one build working at the server root
+ * and under any prefix.
+ */
+const API_BASE = (() => {
+  let dir = window.location.pathname;
+  // Served as a directory, so drop a filename if one is present and make sure
+  // the path ends in a slash before anything is resolved against it.
+  dir = dir.replace(/[^/]*$/, "");
+  return `${dir}api`;
+})();
+
 async function request(path, options) {
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${API_BASE}${path}`, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });

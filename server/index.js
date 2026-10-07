@@ -15,11 +15,25 @@ const PORT = Number(process.env.PORT ?? 31302);
 // Bind to loopback unless told otherwise: a crawler that will fetch any URL it
 // is given should not become reachable on every interface by default.
 const HOST = process.env.HOST ?? "127.0.0.1";
+// Set when a reverse proxy serves this app under a path prefix AND forwards
+// that prefix unchanged (some strip it, some don't — check DevTools → Network
+// if unsure). Stripping it here lets the routes below stay prefix-agnostic.
+//   BASE_PATH=/wqvukjtuhy-31302
+const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, "");
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 failOrphanedAudits();
 
 const app = express();
+if (BASE_PATH) {
+  app.use((req, _res, next) => {
+    if (req.url === BASE_PATH) req.url = "/";
+    else if (req.url.startsWith(`${BASE_PATH}/`)) {
+      req.url = req.url.slice(BASE_PATH.length);
+    }
+    next();
+  });
+}
 app.use(express.json());
 app.use(basicAuth);
 
@@ -89,6 +103,7 @@ if (existsSync(clientDist)) {
 app.listen(PORT, HOST, () => {
   console.log(`Site audit listening on http://${HOST}:${PORT}`);
   console.log(`Auth: ${isAuthEnabled ? "on (basic)" : "OFF — anyone who can reach this port can run crawls"}`);
+  if (BASE_PATH) console.log(`Stripping proxy prefix: ${BASE_PATH}`);
   const allowList = describeAllowList();
   if (allowList) console.log(`SSRF policy: ${allowList}`);
   if (HOST !== "127.0.0.1" && HOST !== "localhost" && !isAuthEnabled) {

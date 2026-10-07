@@ -149,6 +149,41 @@ password from `.env`.
 
 ---
 
+## Running it behind a workspace proxy (code-server)
+
+A code-server workspace reaches apps at
+`https://workspace.intermesh.net/<workspace-id>-<port>/` rather than on the raw
+port, and its proxy **dials `0.0.0.0`, not loopback**. Two settings matter:
+
+```ini
+HOST=0.0.0.0          # or the proxy never sees a listener and nginx 404s
+BASE_PATH=            # see below
+```
+
+`HOST` is the common cause of a bare nginx 404: with the default
+`127.0.0.1` binding nothing is listening on the address the proxy dials, so no
+route is ever registered for that port.
+
+The built page and the UI's API calls both use paths relative to wherever the
+app is mounted, so one build works at the server root and under any prefix.
+What you still have to match is whether the proxy forwards its prefix:
+
+| The proxy... | Set |
+| --- | --- |
+| strips the prefix (server sees `/api/audits`) | leave `BASE_PATH` empty |
+| forwards it (server sees `/<prefix>/api/audits`) | `BASE_PATH=/<prefix>` |
+
+To tell which, with the app running, from a shell on the workspace:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}
+' http://localhost:31302/api/audits
+```
+
+Then load the page in the browser and check DevTools -> Network: if the request
+for `api/audits` 404s while the page itself loads, the proxy is forwarding the
+prefix and you need `BASE_PATH`.
+
 ## Running it
 
 ```bash
