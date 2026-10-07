@@ -23,12 +23,15 @@ npm start            # everything on http://localhost:3001
 ```
 
 Requires Node 20+. The database is created at `data/site-audit.db` on first
-run.
+run. To put it on a server, see [DEPLOY.md](DEPLOY.md).
 
 | Variable | Default | What it does |
 | --- | --- | --- |
 | `PORT` | `3001` | API port |
 | `DATABASE_PATH` | `data/site-audit.db` | SQLite file location |
+| `HOST` | `127.0.0.1` | Interface to bind. `0.0.0.0` needs auth set |
+| `AUTH_USER` / `AUTH_PASSWORD` | — | Both set turns on HTTP basic auth |
+| `ALLOW_PRIVATE_HOSTS` | — | Allowlist of internal crawl targets (hosts + IPv4 CIDRs) |
 | `MAX_RUNNING_AUDITS` | `2` | Concurrent audits allowed |
 | `DATAFORSEO_API_KEY` | — | Enables the Lighthouse / Performance tab |
 | `DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD` | — | Alternative to the key above |
