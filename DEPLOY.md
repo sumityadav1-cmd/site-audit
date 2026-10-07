@@ -156,14 +156,15 @@ A code-server workspace reaches apps at
 port, and its proxy **dials `0.0.0.0`, not loopback**. Two settings matter:
 
 ```ini
-HOST=0.0.0.0          # or the proxy never sees a listener and nginx 404s
+HOST=0.0.0.0          # the default; the proxy dials this, not loopback
 BASE_PATH=            # see below
 ```
 
 Two separate causes of a bare nginx 404 here, and they look identical:
 
-1. **`HOST` left at the default `127.0.0.1`.** Nothing is listening on the
-   address the proxy dials.
+1. **`HOST` set to `127.0.0.1`.** Nothing is listening on the address the
+   proxy dials. The default is `0.0.0.0`, so this only bites if something
+   overrode it.
 2. **The port is not the one the ingress routes.** On the IndiaMART workspace
    the rule maps a single fixed port — `/wqvukjtuhy-3001/` -> pod `:3001`. It is
    not a dynamic port proxy, so any other port 404s however healthy the app is.

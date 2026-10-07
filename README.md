@@ -29,7 +29,7 @@ run. To put it on a server, see [DEPLOY.md](DEPLOY.md).
 | --- | --- | --- |
 | `PORT` | `3001` | API port |
 | `DATABASE_PATH` | `data/site-audit.db` | SQLite file location |
-| `HOST` | `127.0.0.1` | Interface to bind. `0.0.0.0` needs auth set |
+| `HOST` | `0.0.0.0` | Interface to bind. Set `127.0.0.1` for local-only |
 | `AUTH_USER` / `AUTH_PASSWORD` | — | Both set turns on HTTP basic auth |
 | `ALLOW_PRIVATE_HOSTS` | — | Allowlist of internal crawl targets (hosts + IPv4 CIDRs) |
 | `MAX_RUNNING_AUDITS` | `2` | Concurrent audits allowed |

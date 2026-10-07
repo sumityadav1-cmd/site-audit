@@ -15,9 +15,12 @@ import { AUDIT_ISSUE_TYPES } from "../shared/auditIssues.js";
 // (/<workspace-id>-3001/). It is also OpenSEO's dev default, so give one of
 // them a different PORT if you ever run both on the same box.
 const PORT = Number(process.env.PORT ?? 3001);
-// Bind to loopback unless told otherwise: a crawler that will fetch any URL it
-// is given should not become reachable on every interface by default.
-const HOST = process.env.HOST ?? "127.0.0.1";
+// All interfaces by default. The deployment target reaches this through a
+// proxy that dials 0.0.0.0 rather than loopback, and a loopback default made
+// that look like a routing failure (a bare nginx 404) instead of a binding
+// one. The cost is that the app is reachable from the network the moment it
+// starts, which is what the no-auth warning below is for.
+const HOST = process.env.HOST ?? "0.0.0.0";
 // Set when a reverse proxy serves this app under a path prefix AND forwards
 // that prefix unchanged (some strip it, some don't — check DevTools → Network
 // if unsure). Stripping it here lets the routes below stay prefix-agnostic.
@@ -109,9 +112,12 @@ app.listen(PORT, HOST, () => {
   if (BASE_PATH) console.log(`Stripping proxy prefix: ${BASE_PATH}`);
   const allowList = describeAllowList();
   if (allowList) console.log(`SSRF policy: ${allowList}`);
+  // Fires on a default start now that the default binding is 0.0.0.0, which
+  // is the point: this process will fetch any URL a caller names, from this
+  // machine's IP and inside its network.
   if (HOST !== "127.0.0.1" && HOST !== "localhost" && !isAuthEnabled) {
     console.warn(
-      "WARNING: bound beyond loopback with no auth. Set AUTH_USER and AUTH_PASSWORD.",
+      `WARNING: reachable on every interface with no auth — anyone who can route to :${PORT} can make this server fetch any URL. Set AUTH_USER and AUTH_PASSWORD, or HOST=127.0.0.1.`,
     );
   }
   if (!existsSync(clientDist)) {
