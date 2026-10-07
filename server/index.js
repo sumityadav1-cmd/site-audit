@@ -11,14 +11,17 @@ import { basicAuth, isAuthEnabled } from "./auth.js";
 import { describeAllowList } from "./audit/urlPolicy.js";
 import { AUDIT_ISSUE_TYPES } from "../shared/auditIssues.js";
 
-const PORT = Number(process.env.PORT ?? 31302);
+// 3001 because that is the port the deployment target's ingress routes
+// (/<workspace-id>-3001/). It is also OpenSEO's dev default, so give one of
+// them a different PORT if you ever run both on the same box.
+const PORT = Number(process.env.PORT ?? 3001);
 // Bind to loopback unless told otherwise: a crawler that will fetch any URL it
 // is given should not become reachable on every interface by default.
 const HOST = process.env.HOST ?? "127.0.0.1";
 // Set when a reverse proxy serves this app under a path prefix AND forwards
 // that prefix unchanged (some strip it, some don't — check DevTools → Network
 // if unsure). Stripping it here lets the routes below stay prefix-agnostic.
-//   BASE_PATH=/wqvukjtuhy-31302
+//   BASE_PATH=/wqvukjtuhy-3001
 const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, "");
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
