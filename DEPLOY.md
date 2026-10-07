@@ -160,9 +160,21 @@ HOST=0.0.0.0          # or the proxy never sees a listener and nginx 404s
 BASE_PATH=            # see below
 ```
 
-`HOST` is the common cause of a bare nginx 404: with the default
-`127.0.0.1` binding nothing is listening on the address the proxy dials, so no
-route is ever registered for that port.
+Two separate causes of a bare nginx 404 here, and they look identical:
+
+1. **`HOST` left at the default `127.0.0.1`.** Nothing is listening on the
+   address the proxy dials.
+2. **The port is not the one the ingress routes.** On the IndiaMART workspace
+   the rule maps a single fixed port — `/wqvukjtuhy-3001/` -> pod `:3001`. It is
+   not a dynamic port proxy, so any other port 404s however healthy the app is.
+   Confirmed by running the same build on 3001 and watching it load.
+
+Tell them apart in one step: `curl -s -o /dev/null -w '%{http_code}' 
+http://localhost:<port>/` on the box. A 200 there with a 404 in the browser
+means the app is fine and the route does not exist — cause 2.
+
+To use a different port you need an ingress rule for it from whoever runs the
+cluster; setting `PORT` alone is not enough.
 
 The built page and the UI's API calls both use paths relative to wherever the
 app is mounted, so one build works at the server root and under any prefix.
