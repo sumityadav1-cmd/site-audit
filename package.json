@@ -1,0 +1,29 @@
+{
+  "name": "site-audit",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Standalone SEO site audit — crawler, issue engine and report UI, ported from OpenSEO.",
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "node --watch server/index.js",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test server/"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.2",
+    "fast-xml-parser": "^4.5.1",
+    "htmlparser2": "^10.0.0",
+    "robots-parser": "^3.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "vite": "^6.0.7"
+  }
+}
