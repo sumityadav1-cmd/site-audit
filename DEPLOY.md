@@ -69,7 +69,7 @@ nano .env
 Fill in at minimum:
 
 ```ini
-PORT=3001
+PORT=31302
 HOST=0.0.0.0
 AUTH_USER=<pick one>
 AUTH_PASSWORD=<generate: openssl rand -base64 24>
@@ -120,7 +120,7 @@ head -5 /var/log/site-audit.log
 You want to see:
 
 ```
-Site audit listening on http://0.0.0.0:3001
+Site audit listening on http://0.0.0.0:31302
 Auth: on (basic)
 SSRF policy: 2 private host pattern(s) allowlisted via ALLOW_PRIVATE_HOSTS
 ```
@@ -129,22 +129,22 @@ If it says `Auth: OFF` or prints a `WARNING`, stop and fix `.env` before
 opening the firewall. Check it answers:
 
 ```bash
-curl -i http://localhost:3001/api/audits          # expect 401
+curl -i http://localhost:31302/api/audits          # expect 401
 curl -u "$AUTH_USER:$AUTH_PASSWORD" \
-     http://localhost:3001/api/audits             # expect []
+     http://localhost:31302/api/audits             # expect []
 ```
 
 ## 8. Open the port
 
 ```bash
-sudo ufw allow 3001/tcp          # or firewall-cmd, or your cloud SG
+sudo ufw allow 31302/tcp          # or firewall-cmd, or your cloud SG
 ```
 
 Open it to the narrowest source range that works for your reviewers.
 
 ## 9. Use it
 
-Browse to `http://<server>:3001/`. The browser prompts for the username and
+Browse to `http://<server>:31302/`. The browser prompts for the username and
 password from `.env`.
 
 ---
@@ -154,7 +154,7 @@ password from `.env`.
 ```bash
 # Is it up?
 curl -s -o /dev/null -w '%{http_code}\n' -u "$AUTH_USER:$AUTH_PASSWORD" \
-  http://localhost:3001/api/audits
+  http://localhost:31302/api/audits
 
 # Logs
 tail -f /var/log/site-audit.log
@@ -207,7 +207,7 @@ Two limits worth knowing before you share the link:
 | Symptom | Cause |
 | --- | --- |
 | `Cannot find module ... better_sqlite3.node` | `node_modules` was copied from another machine, or `npm install` ran as a different user. Delete `node_modules` and reinstall on the server. |
-| `EADDRINUSE` | Something already holds the port: `ss -ltnp \| grep 3001`. |
+| `EADDRINUSE` | Something already holds the port: `ss -ltnp \| grep 31302`. |
 | `SQLITE_CANTOPEN` | `DATABASE_PATH` directory is missing or not writable by the service user (step 6). |
 | 401 from the browser that never accepts the password | `.env` was not loaded into the shell that ran `npm start` — `set -a; . ./.env; set +a` must be in the same shell. |
 | Blank page, API works | `npm run build` was not run, so `client/dist/` does not exist. |

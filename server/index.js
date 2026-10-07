@@ -11,7 +11,7 @@ import { basicAuth, isAuthEnabled } from "./auth.js";
 import { describeAllowList } from "./audit/urlPolicy.js";
 import { AUDIT_ISSUE_TYPES } from "../shared/auditIssues.js";
 
-const PORT = Number(process.env.PORT ?? 3001);
+const PORT = Number(process.env.PORT ?? 31302);
 // Bind to loopback unless told otherwise: a crawler that will fetch any URL it
 // is given should not become reachable on every interface by default.
 const HOST = process.env.HOST ?? "127.0.0.1";

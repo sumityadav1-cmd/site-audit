@@ -12,14 +12,14 @@ D1/Postgres and a multi-tenant billing stack.
 
 ```bash
 npm install
-npm run dev          # API on :3001, UI on http://localhost:5173
+npm run dev          # API on :31302, UI on http://localhost:5173
 ```
 
 For a single-process deployment, build the UI once and let the API serve it:
 
 ```bash
 npm run build
-npm start            # everything on http://localhost:3001
+npm start            # everything on http://localhost:31302
 ```
 
 Requires Node 20+. The database is created at `data/site-audit.db` on first
@@ -27,7 +27,7 @@ run. To put it on a server, see [DEPLOY.md](DEPLOY.md).
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `PORT` | `3001` | API port |
+| `PORT` | `31302` | API port |
 | `DATABASE_PATH` | `data/site-audit.db` | SQLite file location |
 | `HOST` | `127.0.0.1` | Interface to bind. `0.0.0.0` needs auth set |
 | `AUTH_USER` / `AUTH_PASSWORD` | — | Both set turns on HTTP basic auth |

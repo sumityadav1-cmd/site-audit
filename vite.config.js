@@ -14,7 +14,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    proxy: { "/api": "http://localhost:3001" },
+    proxy: { "/api": "http://localhost:31302" },
   },
   build: { outDir: "dist", emptyOutDir: true },
 });
